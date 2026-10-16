@@ -14,6 +14,15 @@ class Users implements Arrayable
     }
 }
 
+/** @implements Arrayable<int, string> */
+class StringKeys implements Arrayable
+{
+    public function toArray(): array
+    {
+        return ['John'];
+    }
+}
+
 $collection = collect([new User]);
 $arrayable = new Users;
 /** @var iterable<int, int> $iterable */
@@ -76,6 +85,10 @@ assertType("array<0, 'string'>", $collection::unwrap(['string']));
 assertType('array<int, User>', $collection::unwrap(
     $collection
 ));
+assertType('array<string, User>', $associativeCollection::unwrap($associativeCollection));
+assertType('array<string, User>', $associativeCollection::unwrap(new Illuminate\Support\LazyCollection(['John' => new User])));
+
+assertType('Illuminate\Support\Collection<(int|string), mixed>', $collection::fromJson('[1, 2]'));
 
 assertType('Illuminate\Support\Collection<int, User>', $collection::empty());
 
@@ -271,6 +284,14 @@ assertType('Illuminate\Support\Collection<int, User>', $collection->filter(funct
 
 assertType('Illuminate\Support\Collection<int, User>|true', $collection->when(true, function ($collection) {
     assertType('Illuminate\Support\Collection<int, User>', $collection);
+
+    return true;
+}));
+
+assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<string, User>>', $associativeCollection->chunkWhile(function ($user, $string, $collection) {
+    assertType('User', $user);
+    assertType('string', $string);
+    assertType('Illuminate\Support\Collection<string, User>', $collection);
 
     return true;
 }));
@@ -518,9 +539,9 @@ assertType('Illuminate\Support\Collection<int, mixed>', $collection::make(['stri
 assertType('User|null', $collection->firstWhere('string', 'string'));
 assertType('User|null', $collection->firstWhere('string', 'string', 'string'));
 
-assertType('User|null', $collection->value('string'));
-assertType("'string'|User", $collection->value('string', 'string'));
-assertType("'string'|User", $collection->value('string', fn () => 'string'));
+assertType('mixed', $collection->value('string'));
+assertType('mixed', $collection->value('string', 'string'));
+assertType('mixed', $collection->value('string', fn () => 'string'));
 
 assertType('Illuminate\Support\Collection<string, int>', $collection::make(['string'])->flip());
 
@@ -565,6 +586,7 @@ assertType('string', $collection->implode(function ($user, $index) {
 }));
 
 assertType('Illuminate\Support\Collection<int, User>', $collection->intersect([new User]));
+assertType('Illuminate\Support\Collection<string, User>', $associativeCollection->intersect([new User]));
 
 assertType('Illuminate\Support\Collection<int, User>', $collection->intersectByKeys([new User]));
 
@@ -832,6 +854,16 @@ assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int
     return true;
 }));
 
+/** @param  Illuminate\Support\Enumerable<string, User>  $enumerable */
+function chunkWhileOnEnumerable(Illuminate\Support\Enumerable $enumerable): void
+{
+    assertType('Illuminate\Support\Enumerable<int, Illuminate\Support\Enumerable<string, User>>', $enumerable->chunkWhile(function ($user, $string, $chunk) {
+        assertType('Illuminate\Support\Collection<string, User>', $chunk);
+
+        return true;
+    }));
+}
+
 assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, User>>', $collection->chunkBy(fn ($user) => $user->getKey()));
 assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, User>>', $collection->chunkBy('name'));
 
@@ -1022,8 +1054,14 @@ $getOrPutCollection = $collection::make([new User]);
 assertType("'string'|User", $getOrPutCollection->getOrPut(0, fn () => 'string'));
 assertType("Illuminate\Support\Collection<int, 'string'|User>", $getOrPutCollection);
 
+$getOrPutCollection = $collection::make([new User]);
+assertType("'string'|User", $getOrPutCollection->getOrPut('key', 'string'));
+assertType("Illuminate\Support\Collection<'key'|int, 'string'|User>", $getOrPutCollection);
+
 assertType('Illuminate\Support\Collection<int, User>', $collection->forget(1));
 assertType('Illuminate\Support\Collection<int, User>', $collection->forget([1, 2]));
+$forgetKeys = new StringKeys;
+assertType('Illuminate\Support\Collection<string, User>', $associativeCollection->forget($forgetKeys));
 
 assertType('User|null', $collection->pop());
 assertType('Illuminate\Support\Collection<int, User>', $collection->pop(2));
@@ -1059,6 +1097,10 @@ assertType('Illuminate\Support\Collection<string, string>', $collection::make([
 $putCollection = $collection::make([new User]);
 assertType('Illuminate\Support\Collection<int, string|User>', $putCollection->put(1, 'string'));
 assertType("Illuminate\Support\Collection<int, 'string'|User>", $putCollection);
+
+$putKeyCollection = $collection::make([new User]);
+$putKeyCollection->put('key', 'string');
+assertType("Illuminate\Support\Collection<'key'|int, 'string'|User>", $putKeyCollection);
 
 assertType('User|null', $collection->shift());
 assertType('Illuminate\Support\Collection<int, string>', $collection::make([

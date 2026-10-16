@@ -144,7 +144,7 @@ trait EnumeratesValues
      * @template TUnwrapKey of array-key
      * @template TUnwrapValue
      *
-     * @param  array<TUnwrapKey, TUnwrapValue>|static<TUnwrapKey, TUnwrapValue>  $value
+     * @param  array<TUnwrapKey, TUnwrapValue>|\Illuminate\Support\Enumerable<TUnwrapKey, TUnwrapValue>  $value
      * @return array<TUnwrapKey, TUnwrapValue>
      */
     public static function unwrap($value)
@@ -188,7 +188,7 @@ trait EnumeratesValues
      * @param  string  $json
      * @param  int  $depth
      * @param  int  $flags
-     * @return static<TKey, TValue>
+     * @return static<array-key, mixed>
      */
     public static function fromJson($json, $depth = 512, $flags = 0, ...$args)
     {
@@ -359,11 +359,9 @@ trait EnumeratesValues
     /**
      * Get a single key's value from the first matching item in the collection.
      *
-     * @template TValueDefault
-     *
      * @param  string  $key
-     * @param  TValueDefault|(\Closure(): TValueDefault)  $default
-     * @return TValue|TValueDefault
+     * @param  mixed  $default
+     * @return mixed
      */
     public function value($key, $default = null)
     {

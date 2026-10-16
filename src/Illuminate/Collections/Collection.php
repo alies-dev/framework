@@ -469,7 +469,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
     /**
      * Remove an item from the collection by key.
      *
-     * @param  \Illuminate\Contracts\Support\Arrayable<array-key, TValue>|iterable<array-key, TKey>|TKey  $keys
+     * @param  \Illuminate\Contracts\Support\Arrayable<array-key, TKey>|iterable<array-key, TKey>|TKey  $keys
      * @return $this
      */
     public function forget($keys)
@@ -504,13 +504,14 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
     /**
      * Get an item from the collection by key or add it to collection if it does not exist.
      *
+     * @template TGetOrPutKey of array-key
      * @template TGetOrPutValue
      *
-     * @param  mixed  $key
+     * @param  TGetOrPutKey|null  $key
      * @param  TGetOrPutValue|(\Closure(): TGetOrPutValue)  $value
      * @return TValue|TGetOrPutValue
      *
-     * @phpstan-this-out static<TKey, TValue|TGetOrPutValue>
+     * @phpstan-this-out static<TKey|TGetOrPutKey, TValue|TGetOrPutValue>
      */
     public function getOrPut($key, $value)
     {
@@ -657,7 +658,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
     /**
      * Intersect the collection with the given items.
      *
-     * @param  \Illuminate\Contracts\Support\Arrayable<TKey, TValue>|iterable<TKey, TValue>  $items
+     * @param  \Illuminate\Contracts\Support\Arrayable<array-key, TValue>|iterable<array-key, TValue>  $items
      * @return static
      */
     public function intersect($items)
@@ -1137,13 +1138,14 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
     /**
      * Put an item in the collection by key.
      *
+     * @template TPutKey of array-key
      * @template TPutValue
      *
-     * @param  TKey  $key
+     * @param  TPutKey  $key
      * @param  TPutValue  $value
      * @return $this
      *
-     * @phpstan-this-out static<TKey, TValue|TPutValue>
+     * @phpstan-this-out static<TKey|TPutKey, TValue|TPutValue>
      */
     public function put($key, $value)
     {
@@ -1548,7 +1550,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
     /**
      * Chunk the collection into chunks with a callback.
      *
-     * @param  callable(TValue, TKey, static<TKey, TValue>): bool  $callback
+     * @param  callable(TValue, TKey, \Illuminate\Support\Collection<TKey, TValue>): bool  $callback
      * @return static<int, static<TKey, TValue>>
      */
     public function chunkWhile(callable $callback)
