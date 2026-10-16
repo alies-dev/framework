@@ -68,3 +68,18 @@ $throughPaginator->through(function ($post, $key): array {
 });
 
 assertType('Illuminate\Pagination\CursorPaginator<int, array{id: int, post: Post}>', $throughPaginator);
+
+/** @var \Illuminate\Support\Collection<string, string> $otherCollection */
+$otherCollection = new \Illuminate\Support\Collection(['a' => 'x']);
+
+$setCollectionPaginator = clone $paginator;
+assertType('Illuminate\Pagination\Paginator<string, string>', $setCollectionPaginator->setCollection($otherCollection));
+assertType('Illuminate\Pagination\Paginator<string, string>', $setCollectionPaginator);
+
+$setCollectionLengthAwarePaginator = clone $lengthAwarePaginator;
+assertType('Illuminate\Pagination\LengthAwarePaginator<string, string>', $setCollectionLengthAwarePaginator->setCollection($otherCollection));
+assertType('Illuminate\Pagination\LengthAwarePaginator<string, string>', $setCollectionLengthAwarePaginator);
+
+$setCollectionCursorPaginator = clone $cursorPaginator;
+assertType('Illuminate\Pagination\CursorPaginator<string, string>', $setCollectionCursorPaginator->setCollection($otherCollection));
+assertType('Illuminate\Pagination\CursorPaginator<string, string>', $setCollectionCursorPaginator);
