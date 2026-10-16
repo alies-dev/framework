@@ -54,7 +54,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * Find a model in the collection by key or throw an exception.
      *
      * @param  mixed  $key
-     * @return TModel
+     * @return ($key is (\Illuminate\Contracts\Support\Arrayable<array-key, mixed>|array<mixed>) ? static : TModel)
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
@@ -392,7 +392,7 @@ class Collection extends BaseCollection implements QueueableCollection
     /**
      * Get the array of primary keys.
      *
-     * @return array<int, array-key>
+     * @return array<TKey, array-key>
      */
     public function modelKeys()
     {
@@ -403,7 +403,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * Merge the collection with the given items.
      *
      * @param  iterable<array-key, TModel>  $items
-     * @return static
+     * @return static<int, TModel>
      */
     public function merge($items)
     {
@@ -481,7 +481,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * Diff the collection with the given items.
      *
      * @param  iterable<array-key, TModel>  $items
-     * @return static
+     * @return static<int, TModel>
      */
     public function diff($items)
     {
@@ -504,7 +504,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * Intersect the collection with the given items.
      *
      * @param  iterable<array-key, TModel>  $items
-     * @return static
+     * @return static<int, TModel>
      */
     public function intersect($items)
     {
@@ -532,7 +532,7 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @param  (callable(TModel, TKey): mixed)|string|null  $key
      * @param  bool  $strict
-     * @return static
+     * @return ($key is null ? static<int, TModel> : static)
      */
     public function unique($key = null, $strict = false)
     {
@@ -547,7 +547,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * Returns only the models from the collection with the specified keys.
      *
      * @param  array<array-key, mixed>|null  $keys
-     * @return static
+     * @return ($keys is null ? static : static<int, TModel>)
      */
     public function only($keys)
     {
@@ -564,7 +564,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * Returns all models in the collection except the models with specified keys.
      *
      * @param  array<array-key, mixed>|null  $keys
-     * @return static
+     * @return ($keys is null ? static : static<int, TModel>)
      */
     public function except($keys)
     {
@@ -738,7 +738,7 @@ class Collection extends BaseCollection implements QueueableCollection
     /**
      * {@inheritDoc}
      *
-     * @return \Illuminate\Support\Collection<TModel, TKey>
+     * @return \Illuminate\Support\Collection<never, never>
      */
     #[\Override]
     public function flip()
@@ -762,6 +762,8 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @template TPadValue
      *
+     * @param  int  $size
+     * @param  TPadValue  $value
      * @return \Illuminate\Support\Collection<int, TModel|TPadValue>
      */
     #[\Override]
@@ -797,6 +799,7 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @template TZipValue
      *
+     * @param  \Illuminate\Contracts\Support\Arrayable<array-key, TZipValue>|iterable<array-key, TZipValue>  ...$items
      * @return \Illuminate\Support\Collection<int, \Illuminate\Support\Collection<int, TModel|TZipValue>>
      */
     #[\Override]

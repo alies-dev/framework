@@ -8,6 +8,8 @@ assertType('Illuminate\Database\Eloquent\Collection<int, User>', $collection);
 assertType('User|null', $collection->find(1));
 assertType("'string'|User", $collection->find(1, 'string'));
 assertType('Illuminate\Database\Eloquent\Collection<int, User>', $collection->find([1]));
+assertType('User', $collection->findOrFail(1));
+assertType('Illuminate\Database\Eloquent\Collection<int, User>', $collection->findOrFail([1, 2]));
 
 assertType('Illuminate\Database\Eloquent\Collection<int, User>', $collection->load('string'));
 assertType('Illuminate\Database\Eloquent\Collection<int, User>', $collection->load(['string']));
@@ -186,10 +188,24 @@ assertType('Illuminate\Support\Collection<int, mixed>', $collection->collapse())
 assertType('Illuminate\Support\Collection<int, mixed>', $collection->flatten());
 assertType('Illuminate\Support\Collection<int, mixed>', $collection->flatten(4));
 
-assertType('Illuminate\Support\Collection<User, int>', $collection->flip());
+assertType('Illuminate\Support\Collection<never, never>', $collection->flip());
 
 assertType('Illuminate\Support\Collection<int, int|User>', $collection->pad(2, 0));
 assertType('Illuminate\Support\Collection<int, string|User>', $collection->pad(2, 'string'));
+
+/** @var \Illuminate\Database\Eloquent\Collection<string, User> $keyed */
+$keyed = $collection;
+
+assertType('array<string, (int|string)>', $keyed->modelKeys());
+assertType('Illuminate\Database\Eloquent\Collection<int, User>', $keyed->merge($keyed));
+assertType('Illuminate\Database\Eloquent\Collection<int, User>', $keyed->diff($keyed));
+assertType('Illuminate\Database\Eloquent\Collection<int, User>', $keyed->intersect($keyed));
+assertType('Illuminate\Database\Eloquent\Collection<int, User>', $keyed->unique());
+assertType('Illuminate\Database\Eloquent\Collection<string, User>', $keyed->unique('string'));
+assertType('Illuminate\Database\Eloquent\Collection<string, User>', $keyed->only(null));
+assertType('Illuminate\Database\Eloquent\Collection<int, User>', $keyed->only(['string']));
+assertType('Illuminate\Database\Eloquent\Collection<string, User>', $keyed->except(null));
+assertType('Illuminate\Database\Eloquent\Collection<int, User>', $keyed->except(['string']));
 
 assertType('array<int, mixed>', $collection->getQueueableIds());
 
