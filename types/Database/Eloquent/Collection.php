@@ -8,7 +8,10 @@ assertType('Illuminate\Database\Eloquent\Collection<int, User>', $collection);
 assertType('User|null', $collection->find(1));
 assertType("'string'|User", $collection->find(1, 'string'));
 assertType('Illuminate\Database\Eloquent\Collection<int, User>', $collection->find([1]));
+assertType('User|null', $collection->find(new User));
 assertType('User', $collection->findOrFail(1));
+assertType('User', $collection->findOrFail(new User));
+assertType('Illuminate\Database\Eloquent\Collection<int, User>', $collection->findOrFail($collection));
 assertType('Illuminate\Database\Eloquent\Collection<int, User>', $collection->findOrFail([1, 2]));
 
 assertType('Illuminate\Database\Eloquent\Collection<int, User>', $collection->load('string'));

@@ -27,7 +27,7 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @param  mixed  $key
      * @param  TFindDefault  $default
-     * @return ($key is (\Illuminate\Contracts\Support\Arrayable<array-key, mixed>|array<mixed>) ? static : TModel|TFindDefault)
+     * @return ($key is \Illuminate\Database\Eloquent\Model ? TModel|TFindDefault : ($key is (\Illuminate\Contracts\Support\Arrayable<array-key, mixed>|array<mixed>) ? static : TModel|TFindDefault))
      */
     public function find($key, $default = null)
     {
@@ -54,7 +54,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * Find a model in the collection by key or throw an exception.
      *
      * @param  mixed  $key
-     * @return ($key is (\Illuminate\Contracts\Support\Arrayable<array-key, mixed>|array<mixed>) ? static : TModel)
+     * @return ($key is \Illuminate\Database\Eloquent\Model ? TModel : ($key is (\Illuminate\Contracts\Support\Arrayable<array-key, mixed>|array<mixed>) ? static : TModel))
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
