@@ -69,6 +69,12 @@ assertType("array<0, 'string'>", $collection::unwrap(['string']));
 assertType('array<int, User>', $collection::unwrap(
     $collection
 ));
+assertType('array<string, User>', $associativeCollection::unwrap($associativeCollection));
+assertType('array<string, User>', $associativeCollection::unwrap(new Collection(['Sam' => new User])));
+
+assertType('Illuminate\Support\LazyCollection<(int|string), mixed>', $collection::fromJson('[1, 2]'));
+assertType('mixed', $collection->value('string'));
+assertType('mixed', $collection->value('string', 'string'));
 
 assertType('Illuminate\Support\LazyCollection<int, User>', $collection::empty());
 
@@ -458,6 +464,7 @@ assertType('string', $collection->implode(function ($user, $index) {
 }));
 
 assertType('Illuminate\Support\LazyCollection<int, User>', $collection->intersect([new User]));
+assertType('Illuminate\Support\LazyCollection<string, User>', $associativeCollection->intersect([new User]));
 
 assertType('Illuminate\Support\LazyCollection<int, User>', $collection->intersectByKeys([new User]));
 
@@ -719,6 +726,14 @@ assertType('Illuminate\Support\LazyCollection<int, Illuminate\Support\LazyCollec
     assertType('User', $user);
     assertType('int', $int);
     assertType('Illuminate\Support\Collection<int, User>', $collection);
+
+    return true;
+}));
+
+assertType('Illuminate\Support\LazyCollection<int, Illuminate\Support\LazyCollection<string, User>>', $associativeCollection->chunkWhile(function ($user, $string, $collection) {
+    assertType('User', $user);
+    assertType('string', $string);
+    assertType('Illuminate\Support\Collection<string, User>', $collection);
 
     return true;
 }));
